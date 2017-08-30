@@ -30,6 +30,7 @@
 + 友情连接
 + 会员即时聊天
 - 代码没有整合将就这吧！！！
+### 欢迎 Issues 
 ### 预览图
 
 ![image](https://github.com/cxy-js/Blog-NodeJs/raw/master/public/images/1.png)
