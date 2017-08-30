@@ -1,0 +1,150 @@
+{% extends 'layout.html' %}
+<!--用户列表-->
+{% block users %}
+	<style>
+		.fl{
+			width:80%;
+			margin:50px auto;
+			border:1px solid #ccc;
+			padding:20px;
+		}
+		.fl ul {
+			border-bottom:1px solid #ccc;
+		}
+		.fl ul li{
+			list-style: none;
+			display:inline-block;
+			margin:0 10px;
+			padding:5px;
+			height:30px;
+			
+			font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+		}
+		
+		.fl  span,.fl .addfl input{
+			display:block;
+			width:100%;
+			height:30px;
+			line-height: 30px;
+			margin:10px 0;
+			
+		}
+		#fladd,#fldel{
+			display:inline-block;
+			height:30px;
+			width:80px;
+			line-height: 30px;
+		}
+		
+		#flinfo{
+			display:inline-block;
+			color:red;
+			font-weight:normal;
+			font-size:14px;
+			margin-left:20px;
+		}
+		span.nameinfo{
+
+			color: #fff;
+			
+			-webkit-text-stroke: 1px #000;
+		}
+		input{
+			text-indent:10px;
+		}
+		.fl ul a{
+			text-decoration:none;
+			color:red;
+			border:1px solid red;
+			font-size:12px;
+		}
+	</style>
+ 	<div class="fl">
+		<span class="nameinfo">所有分类:</span>
+
+		{%if data.length!=0%}
+				<ul>
+			{%for item in data%}
+					<li class="liflname">{{item.flname}}</li>
+
+			{%endfor%}
+				</ul>
+		{%else%}
+				<span style="font-size:14px">没有分类信息</span>
+		{%endif%}
+		<div class="addfl">
+			<span class="nameinfo">添加/修改/删除分类:</span>
+			<input type="text" name="flname" id="flname">
+			<button id="fladd">添加</button>
+			
+			<button id="fldel">删除</button>
+			<b id="flinfo"></b>
+		</div>
+ 	</div>
+<!-- <script src="/js/jquery-3.2.1.min.js"></script> -->
+<script>
+//点击分类名添加到input
+if($(".liflname")){
+
+	var textli = $(".liflname")
+
+	textli.click(function(){
+
+		var i = $(this).index()
+		
+		$("#flname").val(textli.eq(i).text())
+	})
+}
+//添加分类
+$("#fladd").click(function(){
+	$.ajax({
+		type:"post",
+		url:"/admin/dofl",
+		data:{
+			flname:$("#flname").val()
+		},
+		dataType:"json",
+		success:function(result){
+			if(result=="1"){
+				$("#flinfo").text("名称不能为空")
+				return
+			}
+			if(result=="2"){
+				$("#flinfo").text("名称已存在！")
+				return
+			}
+			if(result=="3"){
+				
+				location.href="/admin/fl"
+			}
+		}
+	})
+})
+//分类删除
+$("#fldel").click(function(){
+	$.ajax({
+		type:"post",
+		url:"/admin/fldel",
+		data:{
+			flname:$("#flname").val()
+		},
+		dataType:"json",
+		success:function(result){
+			if(result=="1"){
+				$("#flinfo").text("名称不能为空")
+				return
+			}
+			if(result=="2"){
+				$("#flinfo").text("名称不存在！")
+				return
+			}
+			if(result=="3"){
+				//删除成功
+				location.href="/admin/fl"
+			}
+		}
+	})
+})
+</script>
+
+{% endblock %}

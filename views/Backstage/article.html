@@ -1,0 +1,249 @@
+{% extends 'layout.html' %}
+<!--用户列表-->
+{% block users %}
+<link rel="stylesheet" href="/css/wangEditor.min.css">
+	<style>
+		.wenzhang{
+			width:80%;
+			margin:40px auto;
+		
+		}
+		.wenzhang .addarticle{
+			width:100%;
+			height:40px;
+			border-bottom:1px solid #ccc;
+		}
+		.wenzhang .addarticle .addarticle-link,.article-list-span{
+			display:block;
+			width:160px;
+			height:40px;
+			line-height: 40px;
+			text-align: left;
+			color:#0073AA;
+			cursor:pointer;
+		}
+		.articleblock{
+			width:80%;
+			margin:0 auto;
+			position:absolute;
+			top:70px;
+			left:10%;
+			background:#fff;
+			overflow:hidden;
+			box-shadow:0 0 10px #000;
+			padding:10px;
+			display:none;
+
+		}
+		.articleblock div{
+			margin:10px 0;
+		}
+		.articleblock div span,.articleblock div input,.articleblock div textarea{
+			
+			margin:10px 0 ;
+		}
+		.articleblock div span{
+			width:100px;
+			
+		}
+		.articleblock i{
+			display:inline-block;
+			font-style:normal;
+			color:red;
+			font-size:14px;
+		}
+		.articleblock div input{
+			width:100%;
+			height:30px;
+		}
+		.articleblock div textarea{
+			width:100%;
+			height:200px;
+		}
+		.articleblock div .add-btn{
+			display:block;
+			width:100px;
+			height:30px;
+			line-height: 30px;
+			text-align: center;
+			cursor:pointer;
+		}
+		.articleblock i.none{
+			width:20px;
+			height:20px;
+			text-align: center;
+			float:right;
+			line-height: 20px;
+			font-weight:900;
+			border:1px solid #ccc;
+			cursor:pointer;
+		}
+		.articleblock i.none:hover{
+			background:#000;
+			color:#fff;
+
+		}
+		.article-list{
+			
+			border:1px solid #ccc;
+			border-bottom:none;
+		}
+		.table{
+		
+			margin:0px auto;
+		}
+		table{
+			width:100%;
+			border-collapse: collapse;
+		}
+		table th,table td{
+			width:400px;
+			
+			height:40px;
+			line-height: 40px;
+		    text-align: center;
+		    font-family:'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+		}
+		tr{
+			border-bottom:1px solid #ccc;
+		}
+		table tr:nth-child(odd){
+
+			background:#f5f5f5;
+		}	
+		.page{
+			margin:10px 0;
+		}
+		.w-e-text-container{
+			height:200px !important
+		}
+	</style>
+	<div class="wenzhang">
+		<div class="addarticle">
+			<span class="addarticle-link">→ 添加新文章</span>
+		<!--添加新文章弹框-->
+			<div class="articleblock">
+				<i class="none">×</i>
+			<div>
+				<span>选择分类：</span>
+				<select name="category" id="category">
+				{%for item in flinfo%}
+					<option value="{{item.id}}">{{item.flname}}</option>
+				{%endfor%}
+				</select>
+			</div>
+				<div>
+					<span>标题：</span><i class="title-i"></i>
+					<input type="text" name="title" id="title" placeholder="请输入标题...">
+				</div>
+				<div>
+					<span>内容：</span><i class="content-i"></i>
+					<!--富文本编辑器-->
+					<div id="border"></div>
+
+					<textarea name="content" id="content" placeholder="请输入相关内容..." hidden></textarea>
+				</div>
+				<div>
+					<button class="add-btn">提交</button>
+				</div>
+			</div>
+		<!--添加新文章弹框 end-->
+		<span class="article-list-span">→ 文章列表</span>
+			<div class="article-list">
+				
+					<table>
+						<tr>
+							<th>标题</th>
+							<th>作者</th>
+							<th>分类</th>
+							<th>日期</th>
+							<th>操作</th>
+						</tr>
+						
+						{%if article.length!=0%}
+							{%for item in article%}
+							<tr>
+								<td>{{item.title}}</td>
+								<td>{{item.author}}</td>
+								<td>{{item.category.flname}}</td>
+								<td>{{item.date}}</td>
+								<td><a href="/admin/article?id={{item.id}}">删除</a></td>
+							</tr>
+							{%endfor%}
+						{%else%}
+							<div>没有任何文章！！</div>
+						{%endif%}
+						
+					</table>
+			</div>
+			<!--分页-->
+		<div class="page">
+		<span>共{{count}}篇文章当前{{page}}/{{pages}}页</span>
+			<span><a href="/admin/article?page=1">首页</a></span>
+
+			<span><a href="/admin/article?page={{page-1}}">上一页</a></span>
+			<span><a href="/admin/article?page={{page+1}}">下一页</a></span>
+			<span><a href="/admin/article?page={{pages}}">尾页</a></span>
+		</div>
+		</div>
+	</div>
+ <!--富文本编辑器cdn-->
+<script src="/js/wangEditor.min.js"></script>
+
+<script>
+ 
+ //富文本编辑器
+var E = window.wangEditor
+var editor = new E("#border")  // 两个参数也可以传入 elem 对象，class 选择器
+
+editor.create()
+
+/////////////文章也显示/////////////////////////
+$(".addarticle-link").click(function(){
+	$(".articleblock").show()
+})
+$(".none").click(function(){
+	$(".articleblock").hide()
+})
+//写文章
+$(".add-btn").click(function(){
+
+    //获取html内容
+   
+     var html = editor.txt.html()
+
+	$.ajax({
+		type:"post",
+		url:"/admin/doarticle",
+		data:{
+			category:$("#category").val(),
+			title:$("#title").val(),
+			content:html
+		},
+		dataType:"json",
+		success:function(result){
+			if(result=="0"){
+				$(".title-i").text("请选择分类")
+				return
+			}
+			if(result=="1"){
+				$(".title-i").text("标题名不能为空")
+				return
+			}
+			if(result=="2"){
+				$(".content-i").text("内容不能为空")
+				return
+			}
+			if(result=="3"){
+				$(".title-i").text("标题已存在")
+				return
+			}
+			if(result=="4"){
+				//新文章添加成功
+				location.href="/admin/article"
+			}
+		}
+	})
+})
+</script>
+{% endblock %}

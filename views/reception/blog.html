@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="/css/blog.css">
+</head>
+<body>
+	<div class="main">
+		<!--登录注册按钮-->
+		{%if username%}
+		<div class="setings">
+			会员:
+			<b style="color:#ff0000"> {{username}}</b>
+			<span><a href="/admin">后台管理</a></span>
+			<span id="logout">退出</span>
+		</div>
+		
+		{%else%}
+		<!--登录注册按钮-->
+		<div class="sing">
+				<span id="dl">登录</span>
+				<span id="zc">注册</span>
+				
+		</div>
+		<!--注册-->
+		<div class="singin">
+				<div class="h3"><h3>注册新用户</h3><span id="del">×</span></div>
+				<div class="mark">
+				
+					<p>
+						<span>帐号：</span><input type="text" name="username" id="username" placeholder="用户名(英文或数字或符号)" ><i class="reusername">用户名已存在</i>
+					</p>
+					<p>
+						<span>密码：</span><input type="password" name="password" id="password" placeholder="密码" >
+					</p>
+					<p>
+						<span>确认密码：</span><input type="password" name="repassword" id="repassword" placeholder="确认密码" ><i class="repassword">密码不一致</i>
+					</p>
+
+				</div>
+				<div id="btn"><button class="btn btn-register" >注册</button>  <span>已有帐号？<a href="javascript:;" id="zc-dl">立即登录</a></span></div>
+			
+		</div>
+		<!--登录-->
+		<div class="singin1">
+				<div class="h3"><h3>用户登录</h3><span id="del1">×</span></div>
+				<div class="mark">
+				
+					<p>
+						<span>帐号：</span><input type="text" name="username" id="singusername" placeholder="用户名" ><i class="singusername"></i>
+					</p>
+					<p>
+						<span>密码：</span><input type="password" name="password" id="singpassword" placeholder="密码" ><i class="singpassword"></i>
+					</p>
+				</div>
+				<div id="btn"><button class="btn btn-login">登录</button>  <span>没有有帐号？<a href="javascript:;" id="dl-zc">注册一个</a></span></div>
+			
+		</div>
+		{%endif%}
+		<!--注册 登录 end-->
+		
+		<nav class="nav">
+			<li><a href="/">首页</a></li>
+			<!--从数据库中显示-->
+			<!--分类信息-->
+			{%for item in categorys%}
+				<li><a href="/?category={{item.id}}">{{item.flname}}</a></li>
+			{%endfor%}
+		</nav>
+		
+		<div class="blog">
+		{%if images.length!=0%}
+	   		<img src="/images/{{images}}" alt="blog" width="160" height="60">
+	  
+	   {%else%}
+	   <!--只有登录用户才能看到-->
+	   	{%if username%}
+	   		<span class="blogimg-info">没有blog,请到后台上传！</span>
+	   	{%else%}
+		{%endif%}
+	   {%endif%}
+ 		</div>
+		
+
+		<!--内容-->
+		<div class="content">
+			<!--文章内容-->
+			{% block contents %}{% endblock %}
+			<aside class="aside">
+			<div class="categorys as">
+				<h3>所有分类</h3>
+				{%for item in categorys%}
+				<li><a href="/?category={{item.id}}">{{item.flname}}</a></li>
+				{%endfor%}
+			</div>
+				<!--所有用户-->
+				<div class="alluser as">
+					<h3>所有用户</h3>
+					{%if users.length!=0%}
+						{%for item in users%}
+						<li>{{item.username}}</li>
+						{%endfor%}
+					{%else%}
+					<span>此博客没有任何用户！</span>
+					{%endif%}
+				</div>
+			<!--会员聊天-->
+			<div class="websocket as">
+				<h3>会员聊天 → 用户: 
+				{%if username%}
+				<span id="websocketname">{{username}}</span>
+				{%else%}
+				<span>请登录后才可聊天</span>
+				{%endif%}
+				</h3>
+				<ul class="ul"></ul>
+				<div class="websocketinfo">
+					<input type="text" id="text">
+					<div>
+					<span id="websocketbtn" >发送</span>
+					<span id="websocketbtn1">清空</span>
+					</div>
+
+				</div>
+			</div>	
+			</aside>
+			
+		</div>
+		<div style="clear:both"></div>
+		
+		<!--footer-->
+		<footer class="footer">
+				<div class="link">
+					<span>友情连接：</span>
+					{%for item in links%}
+					<li><a href="{{item.linkaddress}}" target="_blank">{{item.linkname}}</a></li>
+					
+					{%endfor%}
+				</div>
+			<div class="copy">
+				<a href="">My Bolg&trade;</a>
+				<span>&copy;公园前205年-2017</span>
+				<a href="">关于我们</a>
+				<a href="">联系我们</a>
+				<a href="">客服中心</a>
+				<a href="">广告服务</a>
+				<a href="">Blog介绍</a>
+			</div>
+		</footer>
+
+</div>
+<!--返回顶部-->
+	<div class="go">
+		<span class="goTop">返回顶部</span>
+	</div>
+</body>
+<script src="/js/jquery-3.2.1.min.js"></script>
+<script src="/js/drag.js"></script>
+<script src="/js/login.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/socket.js"></script>
+<script>
+//评论区的登录
+var contentDl = document.getElementById('content-dl')
+var contentZC = document.getElementById('content-zc')
+var plwraing = document.getElementById('pl-wraing')
+if(plwraing!=null){
+
+	contentDl.onclick= function(){
+		DZ()//调用登录
+	}
+	//评论区的注册
+	contentZC.onclick= function(){
+		ZC()//调用注册
+	}
+}
+//返回顶部
+
+$(window).scroll(function(){
+	if($(window).scrollTop()>$(window).height()/2){
+		$(".go").show()
+		console.log($(window).scrollTop())
+	}else{
+		$(".go").hide()
+	}
+})
+
+//返回顶部按钮
+$(".go").click(function(){
+	$(window).scrollTop(0)
+})
+
+</script>
+</html>
+

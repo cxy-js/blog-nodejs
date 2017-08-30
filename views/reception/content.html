@@ -1,0 +1,177 @@
+<!--显示单个文章-->
+{% extends "blog.html" %}
+{% block contents %}
+<style>
+	.contentOne{
+		padding:10px;
+	}
+	.contentOne p{
+		margin:10px;
+	}
+	.sad{
+		display:none;
+	}
+	.pl-bor p{
+		margin:10px 0;
+	}
+	.pl{
+		width:100%;
+
+	}
+	#pl{
+		width:100%;
+	}
+	.pl-wraing span{
+		color:red;
+		font-size:14px;
+	}
+	#pl-btn{
+		width:60px;
+		height:25px;
+	}
+	.pl-record{
+		width:100%;
+		
+		border-radius:5px;
+		margin-top:20px;
+
+	}
+	.pl-record div{
+		padding:5px;
+	}
+	.pl-record div.ftime{
+		font-size:14px;
+	}
+	.pl-author span{
+		color:red;
+	}
+	.plmark{
+		border-bottom:1px solid #ccc;
+	}
+	.pl-border{border-bottom:1px solid #ccc;}
+	.pl textarea{
+		border:1px solid #ccc;
+		border-radius:5px;
+	}
+	#content-dl,#content-zc{
+		display:inline-block;
+		width:60px;
+		height:20px;
+		line-height: 20px;
+		text-align: center;
+		background:#0085BA;
+		color:#fff;
+		border-radius:5px;
+	
+		cursor:pointer;
+	}
+	.ff{
+		word-wrap: break-word;
+		overflow:hidden;
+	}
+	
+</style>
+	<div class="article-left">
+		<div class="con">
+			<div class="title"><h2>{{content.title}}</h2></div>
+			<div class="contentOne sad">{{content.content}}</div>
+			<div class="contentOne ff"></div>
+			<div class="usernameinfo">
+				<span>发表时间: {{content.date}}</span>
+				<span>作者: {{content.author}}</span>
+				<span>
+					<img src="/images/zan.png" width=25 height=25 alt="赞1" id="zan">
+					<i style="color:blue">{{content.zan}}</i>
+					<input type="text" class="contentId" value="{{content.id}}" hidden>
+				</span>
+				<span class="readallcontent"><a href="/">返回</a></span>
+			</div>
+		</div>
+		<div class="pl-bor">
+			<p><span>评论区 : </span></p>
+			{%if username%}
+			<div class="pl">
+				<!--评论内容-->
+				<textarea name="pl" id="pl" rows="6"></textarea>
+				<button id="pl-btn">评论</button>
+
+			</div>
+			{%else%}
+				<div class="pl-wraing" id="pl-wraing">
+					<span>您尚未登录请先登录！</span>
+					<span id="content-dl">登录</span> <span>或</span> <span id="content-zc">注册</span>
+				</div>
+			{%endif%}
+			<div class="pl-record">
+			{%if content.pl.length!=0%}
+			{%for item in content.pl%}	
+				<div class="plmark">
+					<div class="pl-author"><span>{{item.username}}</span>:<div>{{item.pl}}</div></div>
+				
+					<div class="ftime">评论时间:{{item.date}}</div>
+				</div>
+			{%endfor%}
+			{%else%}
+			<div>没有任何评论</div>	
+			{%endif%}
+			</div>
+			
+		</div>
+
+	</div>
+	
+<script src="/js/jquery-3.2.1.min.js"></script>
+<script>
+//html实体字符转义为标签
+var c= $(".sad").html()
+
+function a(str){  
+             var s = "";
+             if(str.length == 0) return "";
+             s = str.replace(/&amp;/g,"&");
+             s = s.replace(/&lt;/g,"<");
+             s = s.replace(/&gt;/g,">");
+             s = s.replace(/&nbsp;/g," ");
+             s = s.replace(/&#39;/g,"\'");
+             s = s.replace(/&quot;/g,"\"");
+             return s;  
+       }
+$(".ff").html(a(c))
+//赞的提交
+var con = $(".con")
+var zan = $("#zan")
+zan.click(function(){
+		
+		$.ajax({
+			type:"post",
+			url:"/content/zan",
+			dataType:"json",
+			data:{
+				zan:$(".usernameinfo span input.contentId").val()
+			},
+			success:function(result){
+				window.location.reload()
+			}
+		})
+	})
+//评论的提交
+
+$("#pl-btn").click(function(){
+		$.ajax({
+			type:"post",
+			url:"/pl/post",
+			dataType:"json",
+			data:{
+				pl:$("#pl").val(),
+				id:$(".usernameinfo span input.contentId").val()
+			},
+			success:function(result){
+				$("#pl").val('')
+				window.location.reload()
+				 // pl(result.reverse())
+			}
+		})
+})
+	
+</script>
+{% endblock %}

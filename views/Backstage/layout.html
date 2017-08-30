@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>后台管理</title>
+	<link rel="stylesheet" href="/css/adminuser.css">
+	<script src="/js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+	<div class="main">
+		<!--公用头部-->
+			<nav>
+				<li><a href="/admin">后台管理</a></li>
+				<li><a href="/admin/user">用户管理</a></li>
+				<li><a href="/admin/fl">分类管理</a></li>
+				<li><a href="/admin/article">文章管理</a></li>
+				<li><a href="/admin/link">友情链接</a></li>
+				
+				<li id="index"><a href="javascript:;" >用户：{{username}}</a><a href="javascript:;" style="color:#ff0000" id="logout">退出</a></li>
+				<li id="index"><a href="/" target="_blank">博客首页</a></li>
+			</nav>
+			<!--不同部分-->
+	<div class="container">	
+		{% block users %}{% endblock %}
+	</div>
+	</div>
+</body>
+<script>
+//退出
+$("#logout").click(function(){
+	
+	$.ajax({
+		
+		url:"/admin/logout",
+		success:function(result){
+			window.location.reload()
+		}
+	})
+})
+</script>
+</html>

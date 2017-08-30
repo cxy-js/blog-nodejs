@@ -1,0 +1,63 @@
+<!--显示所有文章-->
+{% extends "blog.html" %}
+{% block contents %}
+	<div class="article-left">
+				{%if article.length!=0%}
+					{%for item in article%}
+						<div class="con">
+							<div class="title"><h2><a href="/content?id={{item.id}}">{{item.title}}</a></h2></div>
+							<span class="content-pick">内容摘要：</span>
+							<div class="subcontent contents subhead" style="display:none">
+								{{item.content}}
+							</div>
+							<div class="subcontent subhead1"></div>
+							<div class="usernameinfo">
+								<span>发表时间: {{item.date}}</span>
+								<span>作者: {{item.author}}</span>
+								<span class="fln" >所属分类: <span style="color:red">{{item.category.flname}}<span>
+								<img src="/images/zan.png" width=25 height=25 alt="赞">
+								<i style="color:blue">{{item.zan}}</i>
+								<!-- <input type="text" class="contentId" value="{{item.id}}" hidden> -->
+								</span>
+								<span class="readallcontent"><a href="/content?id={{item.id}}">阅读全文</a></span>
+							</div>
+
+						</div>
+					{%endfor%}
+				{%else%}
+				<div style="width:100%">馆主很懒！没有写下任何文章！！</div>
+				{%endif%}
+				<!--分页-->
+		<div class="page">
+	
+			<span>共 <i> {{count}} </i> 条文章 当前第 <i>{{page}} / {{pages}}</i> 页</span>
+			<span><a href="/?category={{category}}&page=1">首页</a></span>
+			<span><a href="/?category={{category}}&page={{page-1}}">上一页</a></span>
+			<span><a href="/?category={{category}}&page={{page+1}}">下一页</a></span>
+			<span><a href="/?category={{category}}&page={{pages}}">尾页</a></span>
+		</div>
+			</div>
+<script src="/js/jquery-3.2.1.min.js"></script>
+<script>
+
+//截取内容前45个字符显示在内容摘要
+	var text = document.querySelectorAll(".contents")
+	for(var i =0;i<text.length;i++){
+
+		var textInner = text[i].innerHTML;
+		text[i].innerHTML = textInner.substring(0,45)
+		$(".subhead1").eq(i).html(a(text[i].innerHTML))	
+	}
+function a(str){  
+             var s = "";
+             if(str.length == 0) return "";
+             s = str.replace(/&amp;/g,"&");
+             s = s.replace(/&lt;/g,"<");
+             s = s.replace(/&gt;/g,">");
+             s = s.replace(/&nbsp;/g," ");
+             s = s.replace(/&#39;/g,"\'");
+             s = s.replace(/&quot;/g,"\"");
+             return s;  
+       }
+</script>
+{% endblock %}

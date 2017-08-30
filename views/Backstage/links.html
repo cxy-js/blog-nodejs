@@ -1,0 +1,194 @@
+{% extends 'layout.html' %}
+<!--用户列表-->
+{% block users %}
+
+	<style>
+		.wenzhang{
+			width:80%;
+			margin:40px auto;
+		
+		}
+		.wenzhang .addarticle{
+			width:100%;
+			height:40px;
+			border-bottom:1px solid #ccc;
+		}
+		.wenzhang .addarticle .addarticle-link,.article-list-span{
+			display:block;
+			width:160px;
+			height:40px;
+			line-height: 40px;
+			text-align: left;
+			color:#0073AA;
+			cursor:pointer;
+		}
+		.articleblock{
+			width:80%;
+			margin:0 auto;
+			position:fixed;
+			top:105px;
+			left:10%;
+			background:#fff;
+			overflow:hidden;
+			box-shadow:0 0 10px #000;
+			padding:10px;
+			display:none;
+
+		}
+		.articleblock div{
+			margin:10px 0;
+		}
+		.articleblock div span,.articleblock div input,.articleblock div textarea{
+			
+			margin:10px 0 ;
+		}
+		.articleblock div span{
+			width:100px;
+			
+		}
+		.articleblock i{
+			display:inline-block;
+			font-style:normal;
+		}
+		.articleblock div input{
+			width:100%;
+			height:30px;
+		}
+		
+		.articleblock div .add-link{
+			display:block;
+			width:100px;
+			height:30px;
+			line-height: 30px;
+			text-align: center;
+			cursor:pointer;
+		}
+		.articleblock i.none{
+			width:20px;
+			height:20px;
+			text-align: center;
+			float:right;
+			line-height: 20px;
+			font-weight:900;
+			border:1px solid #ccc;
+			cursor:pointer;
+		}
+		.articleblock i:hover{
+			background:#000;
+			color:#fff;
+
+		}
+		.article-list{
+			
+			border:1px solid #ccc;
+			border-bottom:none;
+		}
+		.table{
+			width:100%;
+			margin:0 auto;
+		}
+		.table td,.table tr{
+			height:40px;
+			line-height: 40px;
+			text-align: center
+		}
+		.table tr{
+			border-bottom:1px solid #ccc;
+		}
+		.table tr:nth-child(odd){
+
+			background:#f5f5f5;
+		}	
+		.table-link td a{
+			display:inline-block;
+			margin:0 10px;
+		}
+	</style>
+	<div class="wenzhang">
+		<div class="addarticle">
+			<span class="addarticle-link">→ 添加新连接</span>
+		<!--添加新文章弹框-->
+			<div class="articleblock">
+				<i class="none">×</i>
+				<div class="link">
+					<label for="linname">网站名</label>
+					<input type="text" name="linkname" id="linkname" placeholder="请填写需要展示的网站名">
+					<label for="linname">网站地址</label>
+					<input type="text" name="linkaddress" id="linkaddress" placeholder="无需填写http://请直接填写域名即可！！！">
+				</div>
+				<div>
+					<button class="add-link">提交</button><b id="link-info"></b>
+				</div>
+			</div>
+		<!--添加新文章弹框 end-->
+		<span class="article-list-span">→ 友情连接列表</span>
+			<div class="article-list">
+				
+					<table class="table table-link">
+						<tr>
+							<th>网站名</th>
+							<th>网站地址</th>
+							<th>操作</th>
+						</tr>
+						
+						{%if links.length!=0%}
+							{%for item in links%}
+							<tr>
+								<td>{{item.linkname}}</td>
+								<td>{{item.linkaddress}}</td>
+								
+								<td>
+									<a href="/admin/link?id={{item.id}}">删除</a>
+									<a href="/admin/link/emitlink?id={{item.id}}">修改</a>
+								</td>
+							</tr>
+							{%endfor%}
+						{%else%}
+							<div>没有任何连接！！</div>
+						{%endif%}
+						
+					</table>
+			</div>
+		
+		</div>
+	</div>
+
+<script>
+
+$(".addarticle-link").click(function(){
+	$(".articleblock").show()
+})
+$(".none").click(function(){
+	$(".articleblock").hide()
+})
+
+//友情连接
+var http = "http://"
+$(".add-link").click(function(){
+	$.ajax({
+		type:"post",
+		url:"/admin/link/dolink",
+		data:{
+			linkname:$("#linkname").val(),
+			linkaddress:http+$("#linkaddress").val()
+		},
+		dataType:"json",
+		success:function(result){
+			if(result==2){
+				$("#link-info").text("连接已存在！")
+			}
+			if(result==3){
+				$("#link-info").text("添加成功！")
+				setTimeout(function(){
+					
+					//添加成功
+					location.href="/admin/link"
+				},500)
+				
+			}
+		}
+	})
+})
+
+</script>
+{% endblock %}

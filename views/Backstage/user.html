@@ -1,0 +1,62 @@
+
+{% extends 'layout.html' %}
+<!--用户列表-->
+{% block users %}
+<link rel="stylesheet" href="/css/user.css">
+
+				<!--用户列表-->
+				<div class="user list">
+					<h1>用户管理</h1>
+					<div class="count">
+
+						<span>--总用户：<b>{{count}}</b></span>
+						<span> 当前页：</span><span>第<b>{{page}}/{{pages}}</b>页--</span>
+					</div>
+					<div class="adduser">
+						<span class=""><a href="/admin/user/adduser">→ 添加用户</a></span>
+					</div>
+					<!-- <p><a href="/">返回首页</a></p> -->
+					<div class="table">
+						<table border=1>
+							<tr>
+								<th>用户名</th>
+								<th>密码</th>
+								<th>ID</th>
+								<th>日期</th>
+								<th>操作</th>
+							</tr>
+						
+							{%for item in data%}
+								<tr>
+									<td>{{item.username}}</td>
+									<td>{{item.password}}</td>
+									<td>{{item.id.toString()}}</td>
+									<td>{{item.date}}</td>
+									<td>
+
+									<div class="button">
+										<a href="/admin/user?username={{item.username}}">删除</a>
+									</div>
+									<div class="button emit-btn">
+										<a href="/admin/user/emitshow?id={{item.id}}" id="emit-btn">修改</a>
+									</div>
+									
+									</td>
+								</tr>
+							{%endfor%}
+							
+						</table>
+					</div>
+					<div class="page">
+						<span><a href="/admin/user?page=1">首页</a></span>
+						<span><a href="/admin/user?page={{page-1}}">上一页</a></span>
+						<span><a href="/admin/user?page={{page+1}}">下一页</a></span>
+						<span><a href="/admin/user?page={{pages}}">尾页</a></span>
+					</div>
+				</div>
+<!--添加用户-->				
+<script>
+
+</script>
+{% endblock %}
+
